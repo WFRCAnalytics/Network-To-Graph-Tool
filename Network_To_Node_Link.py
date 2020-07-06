@@ -33,7 +33,7 @@ def main():
     # print(args.elev)
     
     # temporary directory
-    temp_dir = os.path.join(os.getcwd(), 'Network_To_Node_Link_Output')
+    temp_dir = os.path.join(os.getcwd(), 'Results')
     
     # determine network dataset to process
     mm_network = args.multimodal_network
