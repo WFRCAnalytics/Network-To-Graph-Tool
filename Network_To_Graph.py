@@ -58,8 +58,11 @@ def main():
     # Prep data
     #=====================================
     
-    # Copy centerlines
-    lines_copy = arcpy.FeatureClassToFeatureClass_conversion(network, temp_dir, 'temp_lines.shp')
+    study_area = os.path.join(os.getcwd(), 'Data', 'TAZ_WFRC_UTM12.shp')
+    
+    # Copy centerlines by clipping to TAZ study area
+    lines_copy = arcpy.Clip_analysis(network, study_area, os.path.join(temp_dir, 'temp_lines.shp'))
+    #lines_copy = arcpy.FeatureClassToFeatureClass_conversion(network, temp_dir, 'temp_lines.shp')
     lines_copy_lyr = arcpy.MakeFeatureLayer_management(lines_copy,"temp_lines_lyr")
     
     # Add unique ID
@@ -82,8 +85,14 @@ def main():
     # add xy coords to start points
     arcpy.AddField_management(start_pts, field_name="xcoord", field_type='double')
     arcpy.AddField_management(start_pts, field_name="ycoord", field_type='double')
-    arcpy.CalculateGeometryAttributes_management(start_pts, [["xcoord", "POINT_X"],
-                                                        ["ycoord", "POINT_Y"]])
+    arcpy.CalculateGeometryAttributes_management(start_pts, [["xcoord", "POINT_X"],["ycoord", "POINT_Y"]])
+    
+    # with arcpy.da.UpdateCursor(start_pts, ['xcoord', 'ycoord', 'SHAPE@X', 'SHAPE@Y']) as cursor:
+    #     for row in cursor:
+    #         row[0] = row[2]
+    #         row[1] = row[3]
+    #         cursor.updateRow(row)
+            
     # create xy key to start points
     arcpy.AddField_management(start_pts, field_name="XY_Key", field_type='string')
     arcpy.CalculateField_management(start_pts,"XY_Key",'"!{}!|!{}!"'.format('xcoord', 'ycoord'))
@@ -98,8 +107,14 @@ def main():
     # add xy coords to end points
     arcpy.AddField_management(end_pts, field_name="xcoord", field_type='double')
     arcpy.AddField_management(end_pts, field_name="ycoord", field_type='double')
-    arcpy.CalculateGeometryAttributes_management(end_pts, [["xcoord", "POINT_X"],
-                                                        ["ycoord", "POINT_Y"]])
+    arcpy.CalculateGeometryAttributes_management(end_pts, [["xcoord", "POINT_X"], ["ycoord", "POINT_Y"]])
+    
+    # with arcpy.da.UpdateCursor(end_pts, ['xcoord', 'ycoord', 'SHAPE@X', 'SHAPE@Y']) as cursor:
+    #     for row in cursor:
+    #         row[0] = row[2]
+    #         row[1] = row[3]
+    #         cursor.updateRow(row)
+    
     # add xy key to end points
     arcpy.AddField_management(end_pts, field_name="XY_Key", field_type='string')
     arcpy.CalculateField_management(end_pts,"XY_Key",'"!{}!|!{}!"'.format('xcoord', 'ycoord'))
@@ -141,6 +156,17 @@ def main():
     print('Creating Links')    
     links_final = arcpy.FeatureClassToFeatureClass_conversion(lines_copy_lyr, temp_dir, 'links.shp')
     
+    # recalc meters and miles
+    with arcpy.da.UpdateCursor(links_final, ['Length_Mil', 'Shape_Leng', 'SHAPE@LENGTH']) as cursor:
+        for row in cursor:
+            
+            row[0] = row[2]
+            
+            # meters to miles
+            row[1] = row[2] * 0.000621371
+            cursor.updateRow(row)    
+    
+    
     #=====================================
     # Create Linkpoints
     #=====================================
@@ -155,6 +181,12 @@ def main():
     arcpy.AddField_management(all_pts, field_name="xcoord", field_type='double')
     arcpy.AddField_management(all_pts, field_name="ycoord", field_type='double')
     arcpy.CalculateGeometryAttributes_management(all_pts, [["xcoord", "POINT_X"],["ycoord", "POINT_Y"]])
+    
+    # with arcpy.da.UpdateCursor(all_pts, ['xcoord', 'ycoord', 'SHAPE@X', 'SHAPE@Y']) as cursor:
+    #     for row in cursor:
+    #         row[0] = row[2]
+    #         row[1] = row[3]
+    #         cursor.updateRow(row)
     
     # add xy key to all points
     arcpy.AddField_management(all_pts, field_name="XY_Key", field_type='string')
