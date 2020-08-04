@@ -24,25 +24,25 @@ arcpy.CheckOutExtension("Spatial")
 
 
      
-Command line arguments
-parser = argparse.ArgumentParser("Convert Multimodal Network to Node/Link format")
-parser.add_argument('multimodal_network', type=str, help='input multimodal network gdb from WFRC')
-parser.add_argument('mode', type=str, choices=['bike','ped', 'auto'], help='bike, auto, or ped')
-parser.add_argument('--elev', type=str, help='path to overlapping elevation dataset')
-args = parser.parse_args()
+# Command line arguments
+# parser = argparse.ArgumentParser("Convert Multimodal Network to Node/Link format")
+# parser.add_argument('multimodal_network', type=str, help='input multimodal network gdb from WFRC')
+# parser.add_argument('mode', type=str, choices=['bike','ped', 'auto'], help='bike, auto, or ped')
+# parser.add_argument('--elev', type=str, help='path to overlapping elevation dataset')
+# args = parser.parse_args()
 
-print(args.multimodal_network)
-print(args.mode)
-print(args.elev)
+# print(args.multimodal_network)
+# print(args.mode)
+# print(args.elev)
 
 # temporary directory
 temp_dir = os.path.join(os.getcwd(), 'Results')
 
 # determine network dataset to process
-# mm_network = r'E:\Micromobility\Data\Multimodal_Network\MM_NetworkDataset_06242020_JR.gdb'
-# mode = 'bike'
-mm_network = args.multimodal_network
-mode = args.mode
+mm_network = r'E:\Micromobility\Data\Multimodal_Network\MM_NetworkDataset_06242020_JR.gdb'
+mode = 'bike'
+# mm_network = args.multimodal_network
+# mode = args.mode
 
 
 if mode == 'bike':
@@ -59,8 +59,8 @@ print("converting: {}...".format(network))
 create_linkpoints = False
 
 # Store elevation dataset, if provided
-# elevation = r'E:\Data\Elevation\wf_elev.tif'
-elevation = args.elev
+elevation = r'E:\Data\Elevation\wf_elev.tif'
+#elevation = args.elev
 
 # Cleanup files toggle
 perform_clean_up = True
@@ -417,9 +417,15 @@ if create_linkpoints == True:
     linkpoints_dataframe_formatted = linkpoints_dataframe_formatted.sort_values(by=['linkpoint_id'])
 
 
+
+
+
 #-----------------
 # write final csvs
 #-----------------
+
+
+
 
 # export formatted csvs
 print('--exporting to csv')
@@ -451,7 +457,7 @@ if perform_clean_up == True:
     if create_linkpoints == True:
         os.remove(os.path.join(temp_dir, 'linkpoints_temp.csv.xml'))
     
-    del all_pts
+    
     del elevation
     del end_pts
     del lines_copy
@@ -467,5 +473,3 @@ if perform_clean_up == True:
 print('Done!')
 
 
-# mz = pd.read_csv("E:\Projects\Create_Microzones\Output\microzones.csv")
-# node_frequency = mz['NODE_ID'].value_counts()

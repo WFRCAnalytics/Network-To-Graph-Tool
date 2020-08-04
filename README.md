@@ -20,12 +20,12 @@ Speed: Speed limit in MPH
 AutoNetwork: Indicates if link  is part of Auto Network  
 BikeNetwork: Indicates if link  is part of Bike Network   
 PedNetwork: Indicates if link  is part of Pedestrian Network  
-DriveTime:  
-BikeTime:  
-Pedestrian:  
+DriveTime: (No longer reliable)  
+BikeTime:  (No longer reliable)  
+Pedestrian:  (No longer reliable)  
 Length_Miles:  
 ConnectorN:  
-RoadClass:  
+RoadClass:  road class  
 AADT: Average Annual Daily Traffic  
 Length_Meters:  
 
