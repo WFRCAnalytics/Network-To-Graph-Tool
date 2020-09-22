@@ -73,8 +73,26 @@ study_area = os.path.join(os.getcwd(), 'Data', 'TAZ_WFRC_UTM12.shp')
 # select road segments that overlap with study area
 lines_copy_lyr = arcpy.MakeFeatureLayer_management(network,"temp_lines_lyr")
 arcpy.SelectLayerByLocation_management("temp_lines_lyr", 'intersect', study_area)
-lines_copy = arcpy.FeatureClassToFeatureClass_conversion(lines_copy_lyr, temp_dir, 'temp_lines.shp')
+lines_study_area = arcpy.FeatureClassToFeatureClass_conversion(lines_copy_lyr, temp_dir, 'temp_lines.shp')
+
+# erase 
+print("Adding canyon roads...")
+canyon_roads = r'.\Data\Canyon_Roads.shp'
+lines_erased = os.path.join(temp_dir, 'lines_erased.shp')
+arcpy.Erase_analysis(lines_study_area, canyon_roads, lines_erased)
+
+# merge
+arcpy.Append_management([canyon_roads], lines_erased, schema_type='NO_TEST')
+
+
+# split lines at vertices
+#lines_copy = arcpy.FeatureToLine_management(lines_copy_lyr, os.path.join(temp_dir, 'temp_lines2.shp'))
+lines_copy = arcpy.FeatureToLine_management(lines_erased, os.path.join(temp_dir, 'temp_lines2.shp'))
+
 lines_copy_lyr = arcpy.MakeFeatureLayer_management(lines_copy,"temp_lines_lyr2")
+
+
+
 
 # Add unique ID
 unique_id_field = 'id'
